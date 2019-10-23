@@ -1,5 +1,5 @@
 from django.db import models
-from datetime import datetime,date,timedelta
+from datetime import datetime, date, timedelta
 from django.dispatch import receiver
 from django.db.models.signals import pre_save,post_save
 
@@ -50,14 +50,14 @@ class Record(models.Model):
     issued_librarian = models.ForeignKey(Librarian, null=True, on_delete=models.CASCADE)
     book_borrowed = models.ForeignKey(Book, null=True, on_delete=models.CASCADE)
     issued_to_member = models.ForeignKey(Member, null=True, on_delete=models.CASCADE)
-    borrow_date = models.DateField()
-    return_date = models.DateField()
+    borrow_date = models.DateField(default=date.today())
+    return_date = models.DateField(default=date.today()+timedelta(days=7))
     returned = models.BooleanField(default=False)
     actual_return = models.DateField()
     # pay_fine = models.IntegerField(default=0)
 
 
-    @property
+    # @property
     def is_due(self):
         if  self.returned is not None:
             difference = self.actual_return - self.return_date

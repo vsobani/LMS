@@ -9,20 +9,21 @@ class Libraryadmin(admin.ModelAdmin):
 
 admin.site.register(Library, Libraryadmin)
 
-class BookAdminForm(forms.ModelForm):
-    def __init__(self,*args,**kwargs):
-        super(BookAdminForm,self).__init__(*args,**kwargs)
-
-    def clean(self):
-        borrowed_book = self.cleaned_data.get('borrowed_book')
-        is_returned = self.cleaned_data.get('returned')
-        if not is_returned:
-            if borrowed_book.stock == 0:
-                raise forms.ValidationError("book is out of stock", code='invalid')
-            return self.cleaned_data
-
-    def save(self, commit=True):
-        return super(BookAdminForm, self).save(commit=commit)
+# class BookAdminForm(forms.ModelForm):
+#     def __init__(self,*args,**kwargs):
+#         super(BookAdminForm,self).__init__(*args,**kwargs)
+#
+#     def clean(self):
+#         borrowed_book = self.cleaned_data.get('borrowed_book')
+#         is_returned = self.cleaned_data.get('returned')
+#         total_no_books = self.cleaned_data.get('borrowed_book')
+#         if not is_returned:
+#             if borrowed_book.stock == 0 and :
+#                 raise forms.ValidationError("book is out of stock", code='invalid')
+#             return self.cleaned_data
+#
+#     def save(self, commit=True):
+#         return super(BookAdminForm, self).save(commit=commit)
 
 
 class Bookadmin(admin.ModelAdmin):
