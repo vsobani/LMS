@@ -1,8 +1,7 @@
 from django.db import models
 from datetime import datetime, date, timedelta
 from django.dispatch import receiver
-from django.db.models.signals import pre_save,post_save
-
+from django.db.models.signals import pre_save, post_save
 
 
 class Librarian(models.Model):
@@ -13,14 +12,16 @@ class Librarian(models.Model):
     def __str__(self):
         return self.name
 
+
 class Library(models.Model):
     library_id = models.AutoField(primary_key=True)
     library_name = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
-    librarian = models.ForeignKey(Librarian, null=True,on_delete=models.CASCADE)
+    librarian = models.ForeignKey(Librarian, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.library_name
+
 
 class Book(models.Model):
     book_id = models.AutoField(primary_key=True)
@@ -28,7 +29,7 @@ class Book(models.Model):
     book_price = models.IntegerField(default=0)
     ISBN = models.IntegerField()
     available = models.BooleanField(default=False)
-    author = models.CharField(max_length=100, null=True,blank=True)
+    author = models.CharField(max_length=100, null=True, blank=True)
     total_no_books = models.IntegerField(default=0)
     stock = models.IntegerField(default=1)
 
@@ -45,21 +46,21 @@ class Member(models.Model):
     def __str__(self):
         return self.member_name
 
+
 class Record(models.Model):
     record_id = models.AutoField(primary_key=True)
     issued_librarian = models.ForeignKey(Librarian, null=True, on_delete=models.CASCADE)
     book_borrowed = models.ForeignKey(Book, null=True, on_delete=models.CASCADE)
     issued_to_member = models.ForeignKey(Member, null=True, on_delete=models.CASCADE)
     borrow_date = models.DateField(default=date.today())
-    return_date = models.DateField(default=date.today()+timedelta(days=7))
+    return_date = models.DateField(default=date.today() + timedelta(days=7))
     returned = models.BooleanField(default=False)
     actual_return = models.DateField()
     # pay_fine = models.IntegerField(default=0)
 
-
     # @property
     def is_due(self):
-        if  self.returned is not None:
+        if self.returned is not None:
             difference = self.actual_return - self.return_date
             if difference.days > 0:
                 return difference.days * 10
@@ -95,11 +96,12 @@ def is_returned(sender, instance, created, **kwargs):
         if book_borrowed.stock > 0:
             book_borrowed.stock = book_borrowed.stock - 1
             book_borrowed.save()
+
+
 # if created:
 #     if book_borrowed.available == True:
 #          book_borrowed.stock -= 1
 #     if book_borrowed.stock == 0:
 #         book_borrowed.available = False
 #     book_borrowed.save()
-
 

@@ -6,6 +6,7 @@ from .serializer import *
 from rest_framework.decorators import api_view
 from .models import *
 from rest_framework import generics
+from rest_framework import mixins
 
 
 class LibrarianView(viewsets.ModelViewSet):
@@ -358,16 +359,63 @@ def api_librarian_delete_list(request,pk):
     return Response(status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
+"""This is Generic way of creating API"""
+
+class BookListView(generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin,
+                                        mixins.UpdateModelMixin,mixins.RetrieveModelMixin,mixins.DestroyModelMixin):
+    serializer_class = BookSerializer
+    queryset = Book.objects.all()
+    lookup_field = 'pk'
+    
+    def get(self,request,pk=None):
+        if pk:
+            return self.retrieve(request,pk)
+        else:
+            return self.list(request)
+    
+    def post(self,request):
+        return self.create(request)
+
+    def put(self,request,pk):
+        if pk:
+            return self.update(request,book_id=pk)
+        else:
+            return self.update(request,book_id=pk)
+
+    def perform_create(self, serializers):
+        serializers.save(created_by=self.request.data)
 
 
+    def delete(self,request,pk):
+        return self.destroy(request,book_id=pk)
+
+class RecordListView(generics.GenericAPIView,mixins.CreateModelMixin,mixins.ListModelMixin,mixins.UpdateModelMixin,
+                                                    mixins.RetrieveModelMixin,mixins.DestroyModelMixin):
+    
+    serializer_class = RecordSerializer
+    queryset = Record.objects.all()
+    lookup_field = 'pk'
+
+    def get(self,request,pk=None):
+        if pk:
+            return self.retrieve(request,pk)
+        else:
+            return self.list(request)
+    
+    def post(self,request):
+        return self.create(request)
+
+    def put(self,request,pk):
+        if pk:
+            return self.update(request,book_id=pk)
+        else:
+            return self.update(request,book_id=pk)
+
+    def perform_create(self, serializers):
+        serializers.save(created_by=self.request.data)
 
 
-# class BookList(generics.ListAPIView):
-#     queryset = Book.objects.all()
-#     serializer_class = BookSerializer
-#
-#     def list(self, request):
-#         queryset = self.get_queryset()
-#         serializer = BookSerializer(queryset, many=True)
-#         return Response(serializer.data)
-#
+    def delete(self,request,pk):
+        return self.destroy(request,book_id=pk)
+        
+            
